@@ -169,6 +169,9 @@ public class RequestWrapper extends HttpServletRequestWrapper {
 	}
 
 	private String applyRegexSanitizers(String value) {
+		if (value == null || value.length() > MAX_REGEX_INPUT_LENGTH) {
+			return escapeForLargeInput(value);
+		}
 		String sanitized = value;
 		sanitized = scriptPattern.matcher(sanitized).replaceAll("");
 		sanitized = srcPatternSingleQuote.matcher(sanitized).replaceAll("");
