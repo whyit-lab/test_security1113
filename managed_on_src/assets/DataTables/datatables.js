@@ -4,7 +4,7 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#ju/dt-2.3.4/b-3.2.5
+ *   https://datatables.net/download/#bs5/dt-2.3.4/b-3.2.5
  *
  * Included libraries:
  *   DataTables 2.3.4, Buttons 3.2.5
@@ -516,7 +516,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "ju/dt-2.3.4/b-3.2.5",
+		builder: "bs5/dt-2.3.4/b-3.2.5",
 	
 		/**
 		 * Buttons. For use with the Buttons extension for DataTables. This is
@@ -14075,7 +14075,7 @@
 }));
 
 
-/*! DataTables jQuery UI integration
+/*! DataTables Bootstrap 5 integration
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -14127,37 +14127,72 @@ var DataTable = $.fn.dataTable;
 
 
 /**
- * DataTables integration for jQuery UI.
+ * DataTables integration for Bootstrap 5.
  *
  * This file sets the defaults and adds options to DataTables to style its
- * controls using jQuery UI. See https://datatables.net/manual/styling/jqueryui
+ * controls using Bootstrap. See https://datatables.net/manual/styling/bootstrap
  * for further information.
  */
 
+/* Set the defaults for DataTables initialisation */
+$.extend( true, DataTable.defaults, {
+	renderer: 'bootstrap'
+} );
+
+
+/* Default class modification */
 $.extend( true, DataTable.ext.classes, {
-	container: 'dt-container dt-jqueryui',
-	paging: {
-		active: 'ui-state-disabled',
-		button: 'fg-button ui-button ui-state-default',
-		container: 'dt-paging fg-buttonset ui-buttonset fg-buttonset-multi ui-buttonset-multi',
-		disabled: 'ui-state-disabled'
+	container: "dt-container dt-bootstrap5",
+	search: {
+		input: "form-control form-control-sm"
 	},
-	thead: {
-		cell: 'ui-state-default fg-toolbar ui-toolbar ui-widget-header'
+	length: {
+		select: "form-select form-select-sm"
 	},
-	tfoot: {
-		cell: 'ui-state-default ui-widget-header'
+	processing: {
+		container: "dt-processing card"
 	},
 	layout: {
-		row: 'dt-layout-row ui-helper-clearfix',
-		tableCell: 'table',
+		row: 'row mt-2 justify-content-between',
+		cell: 'd-md-flex justify-content-between align-items-center',
+		tableCell: 'col-12',
+		start: 'dt-layout-start col-md-auto me-auto',
+		end: 'dt-layout-end col-md-auto ms-auto',
+		full: 'dt-layout-full col-md'
 	}
 } );
 
-// Set the defaults for DataTables initialisation
-$.extend(true, DataTable.defaults, {
-	renderer: 'jqueryui'
-});
+
+/* Bootstrap paging button renderer */
+DataTable.ext.renderer.pagingButton.bootstrap = function (settings, buttonType, content, active, disabled) {
+	var btnClasses = ['dt-paging-button', 'page-item'];
+
+	if (active) {
+		btnClasses.push('active');
+	}
+
+	if (disabled) {
+		btnClasses.push('disabled')
+	}
+
+	var li = $('<li>').addClass(btnClasses.join(' '));
+	var a = $('<button>', {
+		'class': 'page-link',
+		role: 'link',
+		type: 'button'
+	})
+		.html(content)
+		.appendTo(li);
+
+	return {
+		display: li,
+		clicker: a
+	};
+};
+
+DataTable.ext.renderer.pagingContainer.bootstrap = function (settings, buttonEls) {
+	return $('<ul/>').addClass('pagination').append(buttonEls);
+};
 
 
 return DataTable;
@@ -17127,14 +17162,14 @@ return DataTable;
 }));
 
 
-/*! jQuery UI integration for DataTables' Buttons
+/*! Bootstrap integration for DataTables' Buttons
  * © SpryMedia Ltd - datatables.net/license
  */
 
 (function( factory ){
 	if ( typeof define === 'function' && define.amd ) {
 		// AMD
-		define( ['jquery', 'datatables.net-jqui', 'datatables.net-buttons'], function ( $ ) {
+		define( ['jquery', 'datatables.net-bs5', 'datatables.net-buttons'], function ( $ ) {
 			return factory( $, window, document );
 		} );
 	}
@@ -17143,7 +17178,7 @@ return DataTable;
 		var jq = require('jquery');
 		var cjsRequires = function (root, $) {
 			if ( ! $.fn.dataTable ) {
-				require('datatables.net-jqui')(root, $);
+				require('datatables.net-bs5')(root, $);
 			}
 
 			if ( ! $.fn.dataTable.Buttons ) {
@@ -17184,41 +17219,67 @@ var DataTable = $.fn.dataTable;
 
 $.extend(true, DataTable.Buttons.defaults, {
 	dom: {
-		collection: {
-			button: {
-				active: 'dt-button-active'
-			}
-		},
 		container: {
-			className: 'dt-buttons ui-buttonset'
+			className: 'dt-buttons btn-group flex-wrap'
 		},
 		button: {
-			className: 'dt-button ui-button ui-corner-all',
-			disabled: 'ui-state-disabled',
-			active: 'ui-state-active',
-			liner: {
-				tag: 'span',
-				className: ''
+			className: 'btn btn-secondary',
+			active: 'active',
+			dropHtml: '',
+			dropClass: 'dropdown-toggle'
+		},
+		collection: {
+			container: {
+				tag: 'div',
+				className: 'dt-button-collection',
+				content: {
+					tag: 'ul',
+					className: 'dropdown-menu show'
+				}
 			},
-			dropHtml: '<span class="ui-button-icon-primary ui-icon ui-icon-triangle-1-s"/>',
-			dropClass: ''
+			closeButton: false,
+			button: {
+				tag: 'li',
+				className: 'dt-button',
+				active: 'dt-button-active-a',
+				disabled: 'disabled',
+				liner: {
+					tag: 'a',
+					className: 'dropdown-item'
+				},
+				spacer: {
+					className: 'divider',
+					tag: 'li'
+				}
+			}
 		},
 		split: {
 			action: {
-				tag: 'button',
-				className: 'dt-button-split-drop-button ui-button ui-corner-left'
+				tag: 'a',
+				className: 'btn btn-secondary dt-button-split-drop-button',
+				closeButton: false
 			},
 			dropdown: {
 				tag: 'button',
-				className: 'dt-button-split-drop ui-button ui-corner-right'
+				className:
+					'btn btn-secondary dt-button-split-drop dropdown-toggle-split',
+				closeButton: false,
+				align: 'split-left',
+				splitAlignClass: 'dt-button-split-left'
 			},
 			wrapper: {
 				tag: 'div',
-				className: 'dt-button-split'
+				className: 'dt-button-split btn-group',
+				closeButton: false
 			}
 		}
+	},
+	buttonCreated: function (config, button) {
+		return config.buttons ? $('<div class="btn-group"/>').append(button) : button;
 	}
 });
+
+DataTable.ext.buttons.collection.rightAlignClassName = 'dropdown-menu-right';
 
 
 return DataTable;
